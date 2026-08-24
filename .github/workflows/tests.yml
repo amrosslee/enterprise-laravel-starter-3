@@ -1,38 +1,47 @@
-name: tests
+name: Run Tests
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-
-permissions:
-  contents: read
+on: [push, pull_request]
 
 jobs:
-  ci:
+  laravel-tests:
     runs-on: ubuntu-latest
 
+    # Setup database service natively in GitHub Actions
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_DATABASE: testing
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
+      - uses: actions/checkout@v4
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
+        uses: shivammathur/setup-php@v2
         with:
           php-version: '8.3'
-          tools: composer:v2
+          extensions: mbstring, dom, fileinfo, mysql
           coverage: none
 
-      - name: Setup Node
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: '22'
+      - name: Copy .env
+        run: php -r "file_exists('.env') || copy('.env.example', '.env');"
 
-      - name: Setup Application
-        run: composer setup
+      - name: Install Dependencies
+        run: composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
-      - name: Run CI Checks
-        run: composer ci:check
+      - name: Generate key
+        run: php artisan key:generate
+
+      - name: Run Migrations & Tests
+        env:
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: testing
+          DB_USERNAME: root
+          DB_PASSWORD: ""
+        run: php artisan test
