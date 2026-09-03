@@ -3,6 +3,8 @@
 namespace Database\Factories;
 
 use App\Models\Comment;
+use App\Models\Project;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,7 +20,9 @@ class CommentFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'project_id' => Project::query()->inRandomOrder()->first()->id,
+            'user_id' => User::query()->inRandomOrder()->first()->id,
+            'body' => $this->faker->paragraph,
         ];
     }
 }

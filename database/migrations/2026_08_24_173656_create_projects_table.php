@@ -18,6 +18,7 @@ return new class extends Migration
             $table->date('start_date')->nullable();
             $table->date('deadline')->nullable();
             $table->boolean('status')->default(false);
+            $table->foreignId('company_id')->constrained()->cascadeOnDelete();
             $table->foreignId('owner_id')->constrained('users')->cascadeOnDelete();
             $table->timestamps();
         });
