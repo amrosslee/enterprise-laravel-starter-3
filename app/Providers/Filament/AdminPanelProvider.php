@@ -28,6 +28,11 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            // ->registration()
+            ->passwordReset()
+            ->emailChangeVerification()
+            ->emailVerification()
+            ->profile()
             ->colors([
                 'primary' => Color::Amber,
             ])
@@ -52,6 +57,8 @@ class AdminPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
             ])
+            ->resourceEditPageRedirect('index')
+            ->resourceCreatePageRedirect('index')
             ->authMiddleware([
                 Authenticate::class,
             ]);
