@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Company;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -24,6 +25,7 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        $companies = Company::all();
         return [
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
@@ -33,6 +35,7 @@ class UserFactory extends Factory
             'two_factor_secret' => null,
             'two_factor_recovery_codes' => null,
             'two_factor_confirmed_at' => null,
+            'company_id' => $companies->isNotEmpty() ? $companies->random()->id : null,
         ];
     }
 
