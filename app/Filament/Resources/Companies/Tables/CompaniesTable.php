@@ -7,6 +7,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
@@ -17,13 +18,18 @@ class CompaniesTable
     {
         return $table
             ->columns([
-                TextColumn::make('name')
+                ImageColumn::make('logo')
+                    ->width(5)
                     ->searchable(),
-                TextColumn::make('logo')
+                TextColumn::make('name')
                     ->searchable(),
                 TextColumn::make('projects_count')
                     ->label('Projects')
                     ->counts('projects')
+                    ->sortable(),
+                TextColumn::make('employees_count')
+                    ->label('Employees')
+                    ->counts('employees')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()

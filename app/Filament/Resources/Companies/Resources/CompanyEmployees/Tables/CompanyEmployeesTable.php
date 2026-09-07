@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Filament\Resources\Projects\Tables;
+namespace App\Filament\Resources\Companies\Resources\CompanyEmployees\Tables;
 
-use Dom\Text;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -14,44 +13,17 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 
-class ProjectsTable
+class CompanyEmployeesTable
 {
     public static function configure(Table $table): Table
     {
         return $table
             ->columns([
-                TextColumn::make('title')
+                TextColumn::make('name')
                     ->searchable(),
-                TextColumn::make('start_date')
-                    ->date()
-                    ->sortable(),
-                TextColumn::make('deadline')
-                    ->date()
-                    ->sortable(),
-                IconColumn::make('status')
-                    ->boolean(),
-                TextColumn::make('company.name')
-                    ->label('Company')
-                    ->sortable(),
-                TextColumn::make('owner.name')
-                    ->label('Owner')
-                    ->sortable(),
-                TextColumn::make('members_count')
-                    ->label('Members')
-                    ->counts('members')
-                    ->sortable(),
-                TextColumn::make('tasks_count')
-                    ->label('Tasks')
-                    ->counts('tasks')
-                    ->sortable(),
-                TextColumn::make('files_count')
-                    ->label('Files')
-                    ->counts('files')
-                    ->sortable(),
-                TextColumn::make('comments_count')
-                    ->label('Comments')
-                    ->counts('comments')
-                    ->sortable(),
+                TextColumn::make('email')
+                    ->label('Email address')
+                    ->searchable(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -60,6 +32,11 @@ class ProjectsTable
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                IconColumn::make('is_active')
+                    ->boolean(),
+                TextColumn::make('company.name')
+                    ->label('Company')
+                    ->sortable(),
             ])
             ->filters([
                 TrashedFilter::make(),

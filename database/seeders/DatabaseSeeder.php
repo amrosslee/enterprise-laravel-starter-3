@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             CompanySeeder::class,
             UserSeeder::class,
             ProjectSeeder::class,
+            ProjectMembersSeeder::class,
             TaskSeeder::class,
             FileSeeder::class,
             CommentSeeder::class,

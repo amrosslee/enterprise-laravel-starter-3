@@ -1,15 +1,12 @@
 <?php
 
-namespace App\Filament\Resources\Users\Schemas;
+namespace App\Filament\Resources\Companies\Resources\CompanyEmployees\Schemas;
 
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 
-class UserForm
+class CompanyEmployeeForm
 {
     public static function configure(Schema $schema): Schema
     {
@@ -28,15 +25,6 @@ class UserForm
                 TextInput::make('password_confirmation')
                     ->password()
                     ->same('password')
-                    ->required(),
-                // Textarea::make('two_factor_secret')
-                //     ->columnSpanFull(),
-                // Textarea::make('two_factor_recovery_codes')
-                //     ->columnSpanFull(),
-                // DateTimePicker::make('two_factor_confirmed_at'),
-                Select::make('company.name')
-                    ->relationship('company', 'name')
-                    ->label('Company')
                     ->required(),
                 Toggle::make('is_active')
                     ->required(),

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Companies\Schemas;
 
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 
@@ -13,7 +14,7 @@ class CompanyForm
             ->components([
                 TextInput::make('name')
                     ->required(),
-                TextInput::make('logo')
+                FileUpload::make('logo')
                     ->required(),
             ]);
     }
