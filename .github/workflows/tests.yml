@@ -59,72 +59,16 @@ jobs:
               run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
             - name: Start Sail services
-              run: ./vendor/bin/sail up -d --build --wait
+              run: php up -d --build --wait
 
             - name: Prepare application
               run: |
-                  ./vendor/bin/sail artisan key:generate --force
-                  ./vendor/bin/sail artisan migrate --force
+                  php artisan key:generate --force
+                  php artisan migrate --force
 
             - name: Run tests
-              run: ./vendor/bin/sail artisan test --compact
+              run: php artisan test --compact
 
             - name: Stop Sail services
               if: always()
-              run: ./vendor/bin/sail down -v
-
-    deploy:
-        name: Deploy to cPanel Dev Server
-        runs-on: ubuntu-latest
-        needs: test
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
-
-            - name: Setup SSH
-              run: |
-                  mkdir -p ~/.ssh
-                  echo "${{ secrets.CPANEL_SSH_KEY }}" > ~/.ssh/github_actions_secret
-                  chmod 600 ~/.ssh/github_actions_secret
-                  ssh-keyscan -p "${{ secrets.CPANEL_PORT }}" -H "${{ secrets.CPANEL_HOST }}" >> ~/.ssh/known_hosts
-
-            - name: Upload code to cPanel server
-              run: |
-                  rsync -az --delete \
-                    -e "ssh -i ~/.ssh/github_actions_secret -p ${{ secrets.CPANEL_PORT }} -o IdentitiesOnly=yes" \
-                    --exclude=".git" \
-                    --exclude=".github" \
-                    --exclude="node_modules" \
-                    --exclude="vendor" \
-                    --exclude=".env" \
-                    --exclude="storage/logs/*" \
-                    --exclude="storage/framework/cache/*" \
-                    --exclude="storage/framework/sessions/*" \
-                    --exclude="storage/framework/views/*" \
-                    --exclude="storage/app/public/*" \
-                    ./ \
-                    "${{ secrets.CPANEL_USER }}@${{ secrets.CPANEL_HOST }}:${{ secrets.APP_PATH }}/"
-
-            - name: Run Laravel deploy commands
-              run: |
-                  ssh -i ~/.ssh/github_actions_secret \
-                    -p "${{ secrets.CPANEL_PORT }}" \
-                    -o IdentitiesOnly=yes \
-                    "${{ secrets.CPANEL_USER }}@${{ secrets.CPANEL_HOST }}" << 'EOF'
-                    set -e
-
-                    cd "${{ secrets.APP_PATH }}"
-
-                    echo "Installing dependencies..."
-                    composer install --no-interaction --prefer-dist --optimize-autoloader
-
-                    echo "Running migrations..."
-                    php artisan migrate --force
-
-                    php artisan storage:link || true
-                    php artisan optimize:clear
-
-                    echo "Deployment completed"
-                  EOF
+              run: php down -v
