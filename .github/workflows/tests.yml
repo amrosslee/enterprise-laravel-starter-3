@@ -16,31 +16,62 @@ jobs:
     test:
         name: Test Laravel App
         runs-on: ubuntu-latest
+        env:
+            APP_ENV: testing
+            DB_CONNECTION: mysql
+            DB_HOST: mysql
+            DB_PORT: 3306
+            DB_DATABASE: laravel
+            DB_USERNAME: sail
+            DB_PASSWORD: password
+            MYSQL_ROOT_PASSWORD: password
+            WWWGROUP: 1000
+            WWWUSER: 1000
 
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
 
-            - name: Setup PHP 8.3
+            - name: Setup PHP 8.5
               uses: shivammathur/setup-php@v2
               with:
-                  php-version: "8.3"
-                  extensions: mbstring, bcmath, pdo, pdo_mysql, tokenizer, xml, ctype, json,
-                      fileinfo, openssl
+                  php-version: "8.5"
+                  extensions: mbstring, bcmath, pdo, pdo_mysql, tokenizer, xml, ctype, json, fileinfo, openssl
                   coverage: none
                   tools: composer:v2
 
             - name: Copy env file
               run: cp .env.example .env
 
+            - name: Configure test environment
+              run: |
+                  cat >> .env <<'EOF'
+                  APP_ENV=testing
+                  DB_CONNECTION=mysql
+                  DB_HOST=mysql
+                  DB_PORT=3306
+                  DB_DATABASE=laravel
+                  DB_USERNAME=sail
+                  DB_PASSWORD=password
+                  EOF
+
             - name: Install Composer dependencies
               run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
-            - name: Generate app key
-              run: php artisan key:generate
+            - name: Start Sail services
+              run: ./vendor/bin/sail up -d --build --wait
 
-            # - name: Run tests
-            #   run: php artisan test
+            - name: Prepare application
+              run: |
+                  ./vendor/bin/sail artisan key:generate --force
+                  ./vendor/bin/sail artisan migrate --force
+
+            - name: Run tests
+              run: ./vendor/bin/sail artisan test --compact
+
+            - name: Stop Sail services
+              if: always()
+              run: ./vendor/bin/sail down -v
 
     deploy:
         name: Deploy to cPanel Dev Server
