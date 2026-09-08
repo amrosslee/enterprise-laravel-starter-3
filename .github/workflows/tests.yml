@@ -54,10 +54,18 @@ jobs:
             - name: Install Composer dependencies
               run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
+            - name: Start Sail services
+              run: ./vendor/bin/sail up -d --build --wait
+
             - name: Prepare application
               run: |
-                  php artisan key:generate --force
-                  php artisan migrate:fresh --force --seed
+                  ./vendor/bin/sail artisan sail:publish
+                  ./vendor/bin/sail artisan key:generate --force
+                  ./vendor/bin/sail artisan migrate:fresh --force --seed
 
             - name: Run tests
-              run: php artisan test --compact
+              run: ./vendor/bin/sail artisan test --compact
+
+            - name: Stop Sail services
+              if: always()
+              run: ./vendor/bin/sail down -v
