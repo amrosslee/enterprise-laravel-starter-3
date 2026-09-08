@@ -12,17 +12,6 @@ jobs:
     test:
         name: Test Laravel App
         runs-on: ubuntu-latest
-        env:
-            APP_ENV: testing
-            DB_CONNECTION: mysql
-            DB_HOST: mysql
-            DB_PORT: 3306
-            DB_DATABASE: laravel
-            DB_USERNAME: sail
-            DB_PASSWORD: password
-            MYSQL_ROOT_PASSWORD: password
-            WWWGROUP: 1000
-            WWWUSER: 1000
 
         steps:
             - name: Checkout code
@@ -32,40 +21,29 @@ jobs:
               uses: shivammathur/setup-php@v2
               with:
                   php-version: "8.5"
-                  extensions: mbstring, bcmath, pdo, pdo_mysql, tokenizer, xml, ctype, json, fileinfo, openssl
+                  extensions: mbstring, bcmath, pdo, pdo_sqlite, tokenizer, xml, ctype, json, fileinfo, openssl
                   coverage: none
                   tools: composer:v2
 
             - name: Copy env file
               run: cp .env.example .env
 
-            - name: Configure test environment
+            - name: Configure SQLite test environment
               run: |
+                  touch database/database.sqlite
                   cat >> .env <<'EOF'
                   APP_ENV=testing
-                  DB_CONNECTION=mysql
-                  DB_HOST=mysql
-                  DB_PORT=3306
-                  DB_DATABASE=laravel
-                  DB_USERNAME=sail
-                  DB_PASSWORD=password
+                  DB_CONNECTION=sqlite
+                  DB_DATABASE=database/database.sqlite
                   EOF
 
             - name: Install Composer dependencies
               run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
-            - name: Start Sail services
-              run: ./vendor/bin/sail up -d --build --wait
-
             - name: Prepare application
               run: |
-                  ./vendor/bin/sail artisan sail:publish
-                  ./vendor/bin/sail artisan key:generate --force
-                  ./vendor/bin/sail artisan migrate:fresh --force --seed
+                  php artisan key:generate --force
+                  php artisan migrate:fresh --seed --force
 
             - name: Run tests
-              run: ./vendor/bin/sail artisan test --compact
-
-            - name: Stop Sail services
-              if: always()
-              run: ./vendor/bin/sail down -v
+              run: php artisan test --compact
