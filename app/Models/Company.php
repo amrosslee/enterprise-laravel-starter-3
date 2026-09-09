@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -22,5 +23,12 @@ class Company extends Model
     public function employees(): HasMany
     {
         return $this->hasMany(User::class);
+    }
+
+    public function logo(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => $value ? ( strpos($value, 'http') !== false ? $value : asset("storage/" . $value)) : null,
+        );
     }
 }

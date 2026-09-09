@@ -20,6 +20,7 @@ class CompaniesTable
             ->columns([
                 ImageColumn::make('logo')
                     ->width(5)
+                    ->imageSize(50)
                     ->searchable(),
                 TextColumn::make('name')
                     ->searchable(),

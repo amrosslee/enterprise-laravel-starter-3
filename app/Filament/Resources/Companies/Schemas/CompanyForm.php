@@ -15,6 +15,11 @@ class CompanyForm
                 TextInput::make('name')
                     ->required(),
                 FileUpload::make('logo')
+                    ->disk('public')
+                    ->visibility('public')
+                    ->directory('logos')
+                    ->image()
+                    ->preventFilePathTampering()
                     ->required(),
             ]);
     }
