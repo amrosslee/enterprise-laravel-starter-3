@@ -11,4 +11,6 @@ enum UserRoles: string
     case Developer = 'dev';
 
     case Engineer = 'eng';
+
+    case Admin = 'admin';
 }

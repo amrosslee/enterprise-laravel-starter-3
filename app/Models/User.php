@@ -19,6 +19,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Validation\ValidationException;
 use Laravel\Fortify\Contracts\PasskeyUser;
 use Laravel\Fortify\PasskeyAuthenticatable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
@@ -80,7 +81,20 @@ class User extends Authenticatable implements PasskeyUser, FilamentUser
     #[Override]
     public function canAccessPanel(Panel $panel): bool
     {
-        return true;
+        if((bool)($this->is_active) === true){
+            if ($panel->getId() === 'admin' && $this->hasRole(UserRoles::Admin->value)) {
+                return true;
+            } elseif ($panel->getId() === 'company') {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            throw ValidationException::withMessages([
+                'data.email' => __('you are not allowed to access this panel. "INACTIVE!"'),
+            ]);
+            return false;
+        }
     }
 
     public function projects(): BelongsToMany

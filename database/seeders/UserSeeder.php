@@ -21,8 +21,9 @@ class UserSeeder extends Seeder
             'email' => 'admin@admin.com',
             'email_verified_at' => now(),
             'password' => bcrypt('password'),
+            'is_active' => true,
         ]);
-        $admin->assignRole(Role::findByName(UserRoles::Manager->value)->first());
+        $admin->assignRole(Role::findByName(UserRoles::Admin->value));
 
         User::factory()->count(50)
             ->create()

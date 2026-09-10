@@ -35,6 +35,7 @@ class UserFactory extends Factory
             'two_factor_secret' => null,
             'two_factor_recovery_codes' => null,
             'two_factor_confirmed_at' => null,
+            'is_active' => fake()->boolean(80),
             'company_id' => $companies->isNotEmpty() ? $companies->random()->id : null,
         ];
     }
