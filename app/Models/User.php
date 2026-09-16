@@ -82,7 +82,7 @@ class User extends Authenticatable implements PasskeyUser, FilamentUser
     public function canAccessPanel(Panel $panel): bool
     {
         if((bool)($this->is_active) === true){
-            if ($panel->getId() === 'admin' && $this->hasRole(UserRoles::Admin->value)) {
+            if ($panel->getId() === 'admin' && $this->isAdmin()) {
                 return true;
             } elseif ($panel->getId() === 'company') {
                 return true;
@@ -100,5 +100,10 @@ class User extends Authenticatable implements PasskeyUser, FilamentUser
     public function projects(): BelongsToMany
     {
         return $this->belongsToMany(Project::class, 'projects_users', 'member_id', 'project_id');
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->hasRole(UserRoles::Admin->value);
     }
 }

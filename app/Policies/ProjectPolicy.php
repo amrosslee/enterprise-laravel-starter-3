@@ -21,12 +21,12 @@ class ProjectPolicy
      */
     public function view(User $user, Project $project): bool
     {
-        return true;
+        return $user->isAdmin() ? true : ($user->company == $project->company);
     }
 
     /**
      * Determine whether the user can create models.
-     */
+    */
     public function create(User $user): bool
     {
         return true;
@@ -34,10 +34,10 @@ class ProjectPolicy
 
     /**
      * Determine whether the user can update the model.
-     */
+    */
     public function update(User $user, Project $project): bool
     {
-        return true;
+        return $user->isAdmin() ? true : ($user->company == $project->company);
     }
 
     /**
@@ -45,7 +45,7 @@ class ProjectPolicy
      */
     public function delete(User $user, Project $project): bool
     {
-        return true;
+        return $user->isAdmin() ? true : ($user->company == $project->company);
     }
 
     /**
@@ -53,7 +53,7 @@ class ProjectPolicy
      */
     public function restore(User $user, Project $project): bool
     {
-        return true;
+        return $user->isAdmin() ? true : false;
     }
 
     /**
@@ -61,6 +61,6 @@ class ProjectPolicy
      */
     public function forceDelete(User $user, Project $project): bool
     {
-        return true;
+        return $user->isAdmin() ? true : false;
     }
 }
